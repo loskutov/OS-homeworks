@@ -20,7 +20,6 @@ char* reverse(char* buf, size_t size) {
 int main() {
     char buf[8192];
     ssize_t n;
-    ssize_t offset = 0;
     while ((n = read_until(STDIN_FILENO, buf, sizeof(buf), ' ')) != 0) {
         if (n == -1) {
             perror("Error while reading");
