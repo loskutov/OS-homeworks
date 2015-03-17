@@ -25,8 +25,6 @@ int main() {
             perror("Error while reading");
             return EXIT_FAILURE;
         } else {
-            if (n == 0)
-                return 0;
             int no_trail = n - (buf[n - 1] == ' ');
             if (write_(STDOUT_FILENO, reverse(buf, no_trail), n) == -1) {
                 perror("Error while writing");
