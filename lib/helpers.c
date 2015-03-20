@@ -1,4 +1,8 @@
 #include "helpers.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 ssize_t read_(int fd, void *buf, size_t count) {
     ssize_t size;
@@ -40,3 +44,17 @@ ssize_t read_until(int fd, void *buf, size_t count, char delimiter) {
     }
     return offset + 1;
 }
+
+
+int spawn(const char* file, char* const argv[]) {
+    int status;
+    pid_t pid = fork();
+    if (pid == 0) {
+        execvp(file, argv);
+        perror("execvp returned");
+    } else if (wait(&status) == -1) {
+            perror("error on waiting");
+    }
+    return WEXITSTATUS(status);
+}
+
