@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include <helpers.h>
+#include "filter.h"
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -15,7 +16,7 @@ int main(int argc, char* argv[]) {
     char buf[8192];
 
     argv[argc] = buf;
-    argv[argc + 1] = NULL;
+    argv[argc + 1] = NULL; // seems to be UB, but still works as expected
     ssize_t n;
     while ((n = read_until(STDIN_FILENO, buf, sizeof(buf), '\n')) != 0) {
         if (n == -1) {
