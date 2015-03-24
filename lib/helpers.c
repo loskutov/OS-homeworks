@@ -52,8 +52,7 @@ int spawn(const char* file, char* const argv[]) {
     if (pid == -1) {
         perror("fork() returned -1");
         return -1;
-    }
-    if (pid == 0) {
+    } else if (pid == 0) {
         execvp(file, argv);
         perror("execvp returned");
         return -1;
