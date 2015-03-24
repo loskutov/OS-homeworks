@@ -8,15 +8,18 @@
 int main(int argc, char* argv[]) {
     if (argc < 2) {
         puts("Usage: filter <file>");
-        return -1;
+        return EXIT_FAILURE;
     }
 
-    const char* file = argv[1];
 
     char buf[8192];
 
-    argv[argc] = buf;
-    argv[argc + 1] = NULL; // seems to be UB, but still works as expected
+    char* arguments[argc + 1];
+
+    memcpy(arguments, argv + 1, (argc - 1) * sizeof(char*));
+    arguments[argc - 1] = buf;
+    arguments[argc] = NULL;
+
     ssize_t n;
     while ((n = read_until(STDIN_FILENO, buf, sizeof(buf), '\n')) != 0) {
         if (n == -1) {
@@ -25,7 +28,9 @@ int main(int argc, char* argv[]) {
         } else {
             if (buf[n - 1] == '\n')
                 buf[n - 1] = '\0';
-            if (spawn(file, argv + 1) == 0)
+            else
+                buf[n] = '\0';
+            if (spawn(arguments[0], arguments) == 0)
                 puts(buf);
         }
     }
