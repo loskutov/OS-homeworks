@@ -49,9 +49,14 @@ ssize_t read_until(int fd, void *buf, size_t count, char delimiter) {
 int spawn(const char* file, char* const argv[]) {
     int status;
     pid_t pid = fork();
+    if (pid == -1) {
+        perror("fork() returned -1");
+        return -1;
+    }
     if (pid == 0) {
         execvp(file, argv);
         perror("execvp returned");
+        return -1;
     } else if (wait(&status) == -1) {
             perror("error on waiting");
     }
