@@ -6,7 +6,7 @@ all:
 	make -C bufcat/
 
 clean:
-	make -C lib/ clean 
+	make -C lib/ clean
 	make -C cat/ clean
 	make -C revwords/ clean
 	make -C filter/ clean
