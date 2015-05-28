@@ -67,3 +67,7 @@ int spawn(const char* file, char* const argv[]) {
     return WEXITSTATUS(status);
 }
 
+
+int exec(execargs_t* args) {
+    return spawn(args->program, args->argv);
+}

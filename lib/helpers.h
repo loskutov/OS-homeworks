@@ -9,4 +9,9 @@ ssize_t read_until(int fd, void *buf, size_t count, char delimiter);
 
 int spawn(const char* file, char* const argv[]);
 
+struct execargs_t {
+    char* program;
+    char* argv[];
+};
+
 #endif
