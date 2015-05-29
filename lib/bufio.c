@@ -87,7 +87,7 @@ size_t buf_getline(int fd, buf_t* buf, char* dest) {
             if (res == -1) {
                 perror("buf_fill");
             } else if (res == 0) {
-                break;
+                dest[dest_offset] = 0;
                 return dest_offset;
             }
         } else break;
@@ -95,6 +95,7 @@ size_t buf_getline(int fd, buf_t* buf, char* dest) {
     if (pos != buf->size)
         memmove(buf->data, buf->data + pos + 1, buf->size - pos - 1);
     buf->size -= pos + 1;
+    dest[dest_offset] = 0;
     return dest_offset;
 }
 
