@@ -66,37 +66,28 @@ ssize_t buf_flush(int fd, buf_t* buffer, size_t required) {
     return offset;
 }
 
-size_t buf_getline(int fd, buf_t* buf, char* dest) {
-    int oldpos = 0;
-    int pos;
-    int dest_offset = 0;
-    do {
-        for (pos = oldpos; pos < buf->size; pos++) {
-            if (buf->data[pos] == '\n') {
-                break;
-            }
+ssize_t buf_getline(int fd, buf_t* buf, char* dest) {
+    ssize_t rd = buf_fill(fd, buf, buf->size + 1);
+    if(rd < 0)
+        return rd;
+    int last_pos = buf->size;
+    int first_pos = buf->size;
+    for (int i = 0; i < buf->size; i++) {
+        if (buf->data[i] == '\n') {
+            last_pos = i;
+            first_pos = i + 1;
+            break;
         }
-        if (pos == buf->size)
-            memcpy(dest + dest_offset, buf->data + oldpos, pos - oldpos);
-        else
-            memcpy(dest + dest_offset, buf->data + oldpos, pos - oldpos + 1);
-
-        dest_offset += pos - oldpos;
-        if (pos == buf->size) {
-            ssize_t res = buf_fill(fd, buf, 1);
-            if (res == -1) {
-                perror("buf_fill");
-            } else if (res == 0) {
-                dest[dest_offset] = 0;
-                return dest_offset;
-            }
-        } else break;
-    } while (true);
-    if (pos != buf->size)
-        memmove(buf->data, buf->data + pos + 1, buf->size - pos - 1);
-    buf->size -= pos + 1;
-    dest[dest_offset] = 0;
-    return dest_offset;
+    }
+    if (last_pos == 0 && buf->size > 0) {
+        memmove(buf->data, buf->data + 1, buf->size - 1);
+        buf->size--;
+        return buf_getline(fd, buf, dest);
+    }
+    memcpy(dest, buf->data, last_pos);
+    memmove(buf->data, buf->data + first_pos, buf->size - first_pos);
+    buf->size -= first_pos;
+    return last_pos;
 }
 
 ssize_t buf_write(int fd, buf_t* buf, char* src, size_t len) {
